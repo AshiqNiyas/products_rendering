@@ -1,11 +1,15 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Card from "../components/Card";
 import Navbar from "../components/Navbar";
-const Home = () => {
-  const [cart, setCart] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+const Home = ({
+  cart,
+  products,
+  filteredProducts,
+  setCart,
+  setProducts,
+  setFilteredProducts,
+}) => {
   const getUsers = async () => {
     const response = await axios.get("/products.json");
     setProducts(response.data);
@@ -31,8 +35,18 @@ const Home = () => {
   };
 
   const addToCart = (product) => {
-    setCart((prev) => [...prev, product]);
-    console.log(cart);
+    setCart((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+      if (existing) {
+        return prev.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        return [...prev, { ...product, quantity: 1 }];
+      }
+    });
   };
 
   useEffect(() => {
@@ -46,7 +60,7 @@ const Home = () => {
         handleCategory={handleCategory}
         handleInput={handleInput}
       />
-      <h1>Users Directory</h1>
+      <h1>All products</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4">
         {filteredProducts == 0 ? (
@@ -54,7 +68,12 @@ const Home = () => {
         ) : (
           filteredProducts.map((product) => {
             return (
-              <Card addToCart={addToCart} key={product.id} product={product} />
+              <Card
+                addToCart={addToCart}
+                key={product.id}
+                product={product}
+                cart={cart}
+              />
             );
           })
         )}

@@ -6,6 +6,7 @@ const Card = ({ product, addToCart }) => {
       <h1>Name : {product.name}</h1>
       <h2>Category : {product.category}</h2>
       <p className="text-sm">Price : {product.price}</p>
+
       <button
         onClick={() => addToCart(product)}
         className="p-1 rounded-md bg-orange-300"
